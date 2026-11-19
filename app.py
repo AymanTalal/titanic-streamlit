@@ -74,11 +74,13 @@ df["age_group"] = pd.cut(
 )
 
 # ---------------------------------------------------------------
-# 6) Dummy coding (k-1): sex ve embarked, ilk kategori referans (survived'a dokunmuyoruz)
+# 6) Dummy coding: sex ve embarked (survived'a dokunmuyoruz)
 # ---------------------------------------------------------------
-dummies = pd.get_dummies(df[["sex", "embarked"]], prefix=["sex", "embarked"], drop_first=True, dtype=int)
-# embarked için effect coding (0, 1, -1): referans kategori C, tüm embarked sütunlarında -1 alır
-dummies.loc[df["embarked"] == "C", ["embarked_Q", "embarked_S"]] = -1
+# Her değişken tek sütun: sex -> 0/1, embarked -> -1/0/1
+dummies = pd.DataFrame({
+    "sex_dummy": df["sex"].map({"female": 0, "male": 1}),
+    "embarked_dummy": df["embarked"].map({"C": -1, "Q": 0, "S": 1}),
+})
 transformed = pd.concat([df, dummies], axis=1)
 
 # Grafikler için okunabilir etiketler
@@ -256,10 +258,9 @@ with tab3:
 
     with st.expander("4. Dummy coding"):
         st.write(
-            "Dummy coding turns categories into numeric columns, keeping k−1 columns per variable. "
-            "sex uses 0/1 coding with female as the reference (sex_male = 1 for male). "
-            "embarked uses effect coding with values 0, 1 and −1: Q → (1, 0), S → (0, 1), and the "
-            "reference port C (Cherbourg) → (−1, −1). "
+            "Each categorical variable is coded into a single numeric column. "
+            "sex_dummy: female → 0, male → 1. "
+            "embarked_dummy: C (Cherbourg) → −1, Q (Queenstown) → 0, S (Southampton) → 1. "
             "survived is already 0/1, so it is not dummy-coded, and dummy columns are not normalized."
         )
         d1, d2 = st.columns(2)
