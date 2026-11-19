@@ -74,9 +74,9 @@ df["age_group"] = pd.cut(
 )
 
 # ---------------------------------------------------------------
-# 6) Dummy coding: sex ve embarked (survived'a dokunmuyoruz)
+# 6) Dummy coding (k-1): sex ve embarked, ilk kategori referans (survived'a dokunmuyoruz)
 # ---------------------------------------------------------------
-dummies = pd.get_dummies(df[["sex", "embarked"]], prefix=["sex", "embarked"], dtype=int)
+dummies = pd.get_dummies(df[["sex", "embarked"]], prefix=["sex", "embarked"], drop_first=True, dtype=int)
 transformed = pd.concat([df, dummies], axis=1)
 
 # Grafikler için okunabilir etiketler
@@ -255,6 +255,8 @@ with tab3:
     with st.expander("4. Dummy coding"):
         st.write(
             "Dummy coding turns each category into its own 0/1 column. "
+            "One category per variable is dropped as the reference (k−1 columns): female for sex and "
+            "C (Cherbourg) for embarked. A passenger with 0 in every embarked column boarded at C. "
             "survived is already 0/1, so it is not dummy-coded, and dummy columns are not normalized."
         )
         d1, d2 = st.columns(2)
